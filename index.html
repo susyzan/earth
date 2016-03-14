@@ -1,0 +1,145 @@
+<html>
+    <head>
+        <!-- load the three.js library -->
+        <script src="build/three.min.js"></script>
+		<script src="fonts/helvetiker_regular.typeface.js"></script>
+    </head>
+    <body>
+ 
+        <div id='cube_animation' style='width:auto;height:auto'></div> 
+        
+        <script type="text/javascript">
+            // define variables 
+            var camera, scene, renderer;
+            var sphere;
+			var origin;
+			var stars;
+			var starsOrigin;
+			var moonOrigin;
+
+            function init() {
+                //*********** Panel *******//
+                // panel is a reference to the div object with id=cube_animation
+                var panel = document.getElementById("cube_animation");
+                
+                //********** Renderer **********//
+                // renderer is a reference to a Renderer object
+                renderer = new THREE.WebGLRenderer();
+                // the render object needs to know the size of the window to draw in
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                // the background color 
+				renderer.setClearColor(0x000020);  
+
+				// we get our render to create a dom element to drawing into. This is a canvas. 
+
+				
+				var canvas = renderer.domElement;
+                // add the canvas to the panel
+                panel.appendChild(canvas);
+                
+                  
+                //********** Camera *********// 
+                // calculate the aspect ratio
+                var panelAspectRatio = window.innerWidth / window.innerHeight;              
+                /// camera is a reference to a Perspective camera
+                camera = new THREE.PerspectiveCamera(30, panelAspectRatio, 1, 200000);               
+                // position the camera in x,y,z
+                camera.position.set(0,0,10000);
+                // set the point in space that the camera is directed to
+                camera.lookAt(new THREE.Vector3(0,0,0));
+                
+                
+                // ******* Light Source *********
+                // create a point light source 
+                var pointLight = new THREE.PointLight( 0xffffff,1.0,300000);
+               // position the light in space
+                pointLight.position.set(100000,0,50000);
+			
+				
+				// sphere
+				var sphereGeometry = new THREE.SphereGeometry( 1300, 50, 50 );
+				var earth = new THREE.ImageUtils.loadTexture("images/earth.jpg");
+				var sphereMaterial = new THREE.MeshPhongMaterial({map:earth, color: 0xffffff, specular: 0xffffff, shininess: 1});
+				var sphere = new THREE.Mesh( sphereGeometry, sphereMaterial );
+				
+				sphere.position.set(0,0,0); 
+				sphere.rotation.set(0,0,0);
+				
+				// moon
+				var moonGeometry = new THREE.SphereGeometry( 350, 50, 50 );
+				var moon = new THREE.ImageUtils.loadTexture("images/moon.jpg");
+				var moonMaterial = new THREE.MeshPhongMaterial({map:moon, color: 0xffffff, specular: 0xffffff, shininess: 1});
+				var sphereMoon = new THREE.Mesh( moonGeometry, moonMaterial );
+				
+				sphereMoon.position.set(5000,0,0); 
+				sphereMoon.rotation.set(0,4,0);
+			
+				 origin  = new THREE.Object3D();
+				 origin.add(sphere);
+				 
+				 origin2  = new THREE.Object3D();
+				 origin2.add(origin);
+				 
+				 moonOrigin  = new THREE.Object3D();
+				 moonOrigin.add(sphereMoon);
+				 
+				//***** Stars ********* 
+                // make a large sphere textured with the milky way
+                // the camera is inside the sphere
+                // the material property side is set to THREE.DoubleSide so the graphics card will draw the inside of the sphere
+                // else it only draws the outside.
+                // set the color to 0x606060 so the stars are not too bright
+                var backgroundGeometry = new THREE.SphereGeometry(190000, 10, 10);
+				var starsTexture = new THREE.ImageUtils.loadTexture("images/stars.jpg");
+				var backgroundMaterial = new THREE.MeshBasicMaterial({map: starsTexture, color: 0x606060,side: THREE.DoubleSide});
+				var stars = new THREE.Mesh(backgroundGeometry, backgroundMaterial);
+                stars.position.set(0, 0, 0);
+				
+				starsOrigin  = new THREE.Object3D();
+				starsOrigin.add(stars);
+                 
+                //********* Scene ***********//
+                //scene is a reference to a Scene object
+                scene = new THREE.Scene();
+                // add the camera to the scene
+                scene.add(camera); 
+                // add the light source to the scene
+                scene.add(pointLight);
+				scene.add(origin);
+				scene.add(origin2);
+				scene.add(starsOrigin);
+				scene.add(moonOrigin);
+				
+                // ******** render the scene ***********
+                // render the scene from the point of view of the camera.
+   				animate();
+            }
+            // animate function is executed with each screen refresh
+			function animate()
+			{
+			// requestAnimationFrame is a standard window function that will
+			// execute the function animate at the next screen refresh
+			window.requestAnimationFrame(animate);
+			// execute render function
+			render();
+			}
+
+			// render renders the scene
+			function render()
+			{
+			origin.rotation.y += 0.027;
+			origin2.rotation.z = 0.4;
+			moonOrigin.rotation.y += 0.001;
+			starsOrigin.rotation.y += 0.0001;
+				
+				
+			// ******** render the scene ***********
+            // render the scene from the point of view of the camera.	
+			renderer.render(scene, camera);
+			}
+            
+            window.onload = init;
+            window.onresize = function(){renderer.render(scene, camera);};
+        </script>
+    </body>
+</html>
