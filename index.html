@@ -30,8 +30,6 @@
                 // the background color 
 				renderer.setClearColor(0x000020);  
 
-				// we get our render to create a dom element to drawing into. This is a canvas. 
-
 				
 				var canvas = renderer.domElement;
                 // add the canvas to the panel
@@ -51,16 +49,19 @@
                 
                 // ******* Light Source *********
                 // create a point light source 
-                var pointLight = new THREE.PointLight( 0xffffff,1.0,300000);
+                var pointLight = new THREE.PointLight( 0xffffff,1.2,300000);
                // position the light in space
                 pointLight.position.set(100000,0,50000);
 			
 				
-				// sphere
+				// sphere				
 				var sphereGeometry = new THREE.SphereGeometry( 1300, 50, 50 );
 				var earth = new THREE.ImageUtils.loadTexture("images/earth.jpg");
-				var sphereMaterial = new THREE.MeshPhongMaterial({map:earth, color: 0xffffff, specular: 0xffffff, shininess: 1});
-				var sphere = new THREE.Mesh( sphereGeometry, sphereMaterial );
+				var earthBump = new THREE.ImageUtils.loadTexture("images/earthBump.jpg");
+				var earthSpecular   = new THREE.ImageUtils.loadTexture('images/earthSpecular.jpg');
+				var specularMaterial = new THREE.Color('0x010101');
+				var sphereMaterial = new THREE.MeshPhongMaterial({map:earth, bumpMap: earthBump, bumpScale: 15, specularMap: earthSpecular, color: 0xffffff, specular: 0xffffff, shininess: 3.2});
+				var sphere = new THREE.Mesh( sphereGeometry, sphereMaterial, specularMaterial);
 				
 				sphere.position.set(0,0,0); 
 				sphere.rotation.set(0,0,0);
